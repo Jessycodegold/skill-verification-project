@@ -41,3 +41,26 @@
 (define-constant ERR_ALREADY_REVIEWED (err u103))
 (define-constant ERR_INVALID_ASSESSMENT (err u104))
 (define-constant ERR_INVALID_INPUT (err u105))
+
+;; Create an assessment (only callable by institutions)
+(define-public (create-assessment (description (string-ascii 100)))
+    (let 
+        (
+            (id (var-get assessment-counter))
+            (valid-description (asserts! (and (> (len description) u0) (<= (len description) u100)) ERR_INVALID_INPUT))
+        )
+        (ok 
+            (begin
+                (map-insert assessments
+                    { assessment-id: id }
+                    {
+                        creator: tx-sender,
+                        description: description,
+                        is-active: true
+                    })
+                (var-set assessment-counter (+ id u1))
+                id
+            )
+        )
+    )
+)
