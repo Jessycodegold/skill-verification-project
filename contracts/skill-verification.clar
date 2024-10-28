@@ -64,3 +64,27 @@
         )
     )
 )
+
+;; Submit an answer to an assessment
+(define-public (submit-answer (assessment-id uint) (answer (string-ascii 200)))
+    (let 
+        (
+            (valid-assessment-id (asserts! (and (> assessment-id u0) (< assessment-id (var-get assessment-counter))) ERR_INVALID_INPUT))
+            (valid-answer (asserts! (and (> (len answer) u0) (<= (len answer) u200)) ERR_INVALID_INPUT))
+            (assessment (unwrap! (map-get? assessments { assessment-id: assessment-id }) ERR_ASSESSMENT_NOT_FOUND))
+        )
+        (asserts! (is-none (map-get? submissions { assessment-id: assessment-id, student: tx-sender })) ERR_ALREADY_SUBMITTED)
+        (ok 
+            (begin
+                (map-insert submissions
+                    { assessment-id: assessment-id, student: tx-sender }
+                    {
+                        answer: answer,
+                        reviewed: false,
+                        passed: false
+                    })
+                (tuple (assessment-id assessment-id) (answer answer))
+            )
+        )
+    )
+)
