@@ -202,3 +202,36 @@
         )
     )
 )
+;; Set prerequisites for an assessment
+(define-public (set-prerequisites 
+    (assessment-id uint)
+    (required-assessments (list 10 uint))
+    (required-badges (list 10 uint))
+    (minimum-score uint)
+)
+    (ok
+        (map-set assessment-prerequisites
+            { assessment-id: assessment-id }
+            {
+                required-assessments: required-assessments,
+                required-badges: required-badges,
+                minimum-score: minimum-score
+            }
+        )
+    )
+)
+
+;; Register as an institution
+(define-public (register-institution (name (string-ascii 50)))
+    (ok
+        (map-insert verified-institutions
+            { institution: tx-sender }
+            {
+                name: name,
+                verification-date: block-height,
+                status: "pending",
+                verification-level: u1
+            }
+        )
+    )
+)
