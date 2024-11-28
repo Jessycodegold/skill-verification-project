@@ -64,3 +64,72 @@
         minimum-score: uint
     }
 )
+;; Create a new assessment category
+(define-public (create-category (name (string-ascii 50)) (description (string-ascii 200)))
+    (let
+        ((category-id (var-get category-counter)))
+        (ok
+            (begin
+                (map-insert assessment-categories
+                    { category-id: category-id }
+                    {
+                        name: name,
+                        description: description,
+                        created-by: tx-sender
+                    })
+                (var-set category-counter (+ category-id u1))
+                category-id
+            )
+        )
+    )
+)
+
+;; Link an existing assessment to a category
+(define-public (link-assessment-to-category (assessment-id uint) (category-id uint))
+    (let
+        (
+            (category (unwrap! (map-get? assessment-categories { category-id: category-id }) ERR_NOT_FOUND))
+            (existing-link (map-get? assessment-category-links { assessment-id: assessment-id }))
+        )
+        (asserts! (is-none existing-link) ERR_ALREADY_EXISTS)
+        (ok
+            (map-insert assessment-category-links
+                { assessment-id: assessment-id }
+                {
+                    category-id: category-id,
+                    added-by: tx-sender,
+                    timestamp: block-height
+                }
+            )
+        )
+    )
+)
+
+;; Create an assessment template
+(define-public (create-template 
+    (name (string-ascii 50))
+    (description (string-ascii 200))
+    (category-id uint)
+    (required-score uint)
+    (time-limit uint)
+)
+    (let
+        ((template-id (var-get template-counter)))
+        (ok
+            (begin
+                (map-insert assessment-templates
+                    { template-id: template-id }
+                    {
+                        name: name,
+                        description: description,
+                        created-by: tx-sender,
+                        category-id: category-id,
+                        required-score: required-score,
+                        time-limit: time-limit
+                    })
+                (var-set template-counter (+ template-id u1))
+                template-id
+            )
+        )
+    )
+)
