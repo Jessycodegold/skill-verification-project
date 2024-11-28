@@ -235,3 +235,20 @@
         )
     )
 )
+;; Get category details
+(define-read-only (get-category-details (category-id uint))
+    (map-get? assessment-categories { category-id: category-id })
+)
+
+;; Get template details
+(define-read-only (get-template-details (template-id uint))
+    (map-get? assessment-templates { template-id: template-id })
+)
+
+;; Check prerequisites for an assessment
+(define-read-only (check-prerequisites (assessment-id uint) (student principal))
+    (match (map-get? assessment-prerequisites { assessment-id: assessment-id })
+        prerequisites (ok (verify-prerequisites prerequisites student))
+        (ok true)  ;; If no prerequisites are set, return true
+    )
+)
