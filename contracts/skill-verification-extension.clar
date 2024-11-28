@@ -252,3 +252,47 @@
         (ok true)  ;; If no prerequisites are set, return true
     )
 )
+;; Verify if a student meets prerequisites
+(define-private (verify-prerequisites (prerequisites {
+        required-assessments: (list 10 uint),
+        required-badges: (list 10 uint),
+        minimum-score: uint
+    }) 
+    (student principal)
+)
+    (and
+        (verify-required-assessments (get required-assessments prerequisites) student)
+        (verify-required-badges (get required-badges prerequisites) student)
+    )
+)
+
+(define-private (verify-required-assessments (assessments (list 10 uint)) (student principal))
+    (match (fold check-assessment-completion assessments true)
+        result result
+        false
+    )
+)
+
+(define-private (verify-required-badges (badges (list 10 uint)) (student principal))
+    (match (fold check-badge-ownership badges true)
+        result result
+        false
+    )
+)
+
+(define-private (check-assessment-completion (assessment-id uint) (acc bool))
+    (and 
+        acc
+        (match (contract-call? .skill-verification get-submission assessment-id tx-sender)
+            submission (get passed submission)
+            false
+        )
+    )
+)
+
+(define-private (check-badge-ownership (badge-id uint) (acc bool))
+    (and
+        acc
+        (is-some (contract-call? .skill-verification get-student-badges tx-sender))
+    )
+)
