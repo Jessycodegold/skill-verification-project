@@ -11,3 +11,56 @@
 ;; Data Variables
 (define-data-var template-counter uint u1)
 (define-data-var category-counter uint u1)
+;; Assessment Categories
+(define-map assessment-categories
+    { category-id: uint }
+    {
+        name: (string-ascii 50),
+        description: (string-ascii 200),
+        created-by: principal
+    }
+)
+
+;; Links assessment IDs to categories
+(define-map assessment-category-links
+    { assessment-id: uint }
+    {
+        category-id: uint,
+        added-by: principal,
+        timestamp: uint
+    }
+)
+
+;; Templates for standardized assessments
+(define-map assessment-templates
+    { template-id: uint }
+    {
+        name: (string-ascii 50),
+        description: (string-ascii 200),
+        created-by: principal,
+        category-id: uint,
+        required-score: uint,
+        time-limit: uint  ;; in blocks
+    }
+)
+
+;; Institution verification status
+(define-map verified-institutions
+    { institution: principal }
+    {
+        name: (string-ascii 50),
+        verification-date: uint,
+        status: (string-ascii 20),  ;; "pending", "verified", "suspended"
+        verification-level: uint     ;; 1-3 indicating trust level
+    }
+)
+
+;; Tracks prerequisites for assessments
+(define-map assessment-prerequisites
+    { assessment-id: uint }
+    {
+        required-assessments: (list 10 uint),
+        required-badges: (list 10 uint),
+        minimum-score: uint
+    }
+)
