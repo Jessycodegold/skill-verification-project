@@ -8,6 +8,10 @@ requirements = []
 path = "contracts/skill-verification.clar"
 depends_on = []
 
+[contracts.skill-verification-extension]
+path = "contracts/skill-verification-extension.clar"
+depends_on = []
+
 [repl]
 costs_version = 2
 parser_version = 2

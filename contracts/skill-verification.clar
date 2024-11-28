@@ -88,3 +88,22 @@
         )
     )
 )
+;; Add these to your base skill-verification.clar contract
+
+(define-read-only (get-submission (assessment-id uint) (student principal))
+    (map-get? submissions 
+        { 
+            assessment-id: assessment-id, 
+            student: student 
+        }
+    )
+)
+
+(define-read-only (get-student-badges (student principal))
+    (map-get? badges 
+        { 
+            student: student,
+            assessment-id: u0
+        }
+    )
+)
